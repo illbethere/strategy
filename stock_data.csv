@@ -1,0 +1,2 @@
+time,open,high,low,close,volume,amount,settelementPrice,openInterest,preClose,suspendFlag,settlementPrice,dr,totaldr,symbol
+1748322240000,3813.2000000000003,3813.2000000000003,3811.4,3812.2000000000003,192,219599820.0,,132691,3813.2000000000003,0,0.0,1.0,1.0,IF2506.IF

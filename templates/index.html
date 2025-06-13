@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSocket 实时数据</title>
+    <script src="//cdn.bootcdn.net/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+
+<body>
+    <h1>实时数据：<span id="data"></span></h1>
+    <script>
+        var socket = io();
+        socket.on('update', function (msg) {
+            document.getElementById('data').innerText = msg.value;
+        });
+    </script>
+</body>
+
+</html>
