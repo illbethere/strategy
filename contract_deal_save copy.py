@@ -4,6 +4,7 @@ from xtquant import xtdatacenter as xtdc
 from xtquant import xtdata
 import pandas as pd
 from datetime import datetime
+import openpyxl
 
 xtdc.set_token("4065054877ce5724155dbc5bcba200381ce5eb35")
 xtdc.init()
@@ -206,20 +207,24 @@ def merge_contract_deal(df, yesaterday_report_path):
         return
     combined = pd.concat([df, yesterday_report], ignore_index=True)
     # 先分组
-    grouped = combined.groupby("期权合约代码")
-
-    merged = grouped.apply(
-        lambda x: pd.Series(
-            {
-                "lot": x["手数"].sum(),
-                "price": (x["平均开仓期权价"] * x["手数"]).sum() / x["手数"].sum(),
-                "object_price": (x["成交期货平均价"] * x["手数"]).sum()
-                / x["手数"].sum(),
-                "multiplier": x["交易单位"].iloc[0],
-                "trade_fee": x["手续费"].sum(),
-            }
+    grouped = (
+        combined.groupby("期权合约代码", as_index=False)
+        .agg(
+            lambda x: pd.Series(
+                {
+                    "lot": x["手数"].sum(),
+                    "price": (x["平均开仓期权价"] * x["手数"]).sum() / x["手数"].sum(),
+                    "object_price": (x["成交期货平均价"] * x["手数"]).sum()
+                    / x["手数"].sum(),
+                    "multiplier": x["交易单位"].iloc[0],
+                    "trade_fee": x["手续费"].sum(),
+                }
+            )
         )
-    ).reset_index()
+        .reset_index(drop=True)
+    )
+
+    merged = grouped
 
     return merged
 
@@ -240,7 +245,7 @@ def save_contract_deal(df):
 
 if __name__ == "__main__":
     contract_deal_path = g.path + f"成交记录_250611.csv"
-    yesaterday_report_path = g.path + f"每日报告_20250610.xlsx"
+    yesaterday_report_path = g.path + "每日报告_20250610.xlsx"
     contract_deal = daily_report_contract_deal(contract_deal_path)
     print("合约成交数据处理完成！")
     print(contract_deal)
